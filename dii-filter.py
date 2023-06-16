@@ -8,8 +8,9 @@ from tqdm import tqdm
 imgpath = sys.argv[1]
 r = int(sys.argv[2])
 
+print(f"Reading file {imgpath}")
 image = skimage.io.imread(imgpath, as_gray=True)
-
+print(image)
 
 def volume_integral_invariant(img, radius, x, y):
     volume = 0
@@ -38,11 +39,11 @@ def volume_integral_invariant(img, radius, x, y):
     return volume
 
 
-def vii_image(img, radius):
-    img = np.zeros((img.shape[0], img.shape[1]))
-    for x in tqdm(range(radius, len(img[0])-radius)):
+def vii_image(input_img, radius):
+    img = np.zeros((input_img.shape[0], input_img.shape[1]))
+    for x in tqdm(range(radius, len(img[0])-radius), unit="pixelrows"):
         for y in range(radius, len(img)-radius):
-            img[x, y] = volume_integral_invariant(img, radius, x, y)
+            img[x, y] = volume_integral_invariant(input_img, radius, x, y)
     return img
 
 
