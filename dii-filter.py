@@ -5,7 +5,7 @@ import sys
 from matplotlib import pyplot as plt
 
 imgpath = sys.argv[1]
-r = sys.argv[2]
+r = int(sys.argv[2])
 
 image = skimage.io.imread(imgpath, as_gray=True)
 
