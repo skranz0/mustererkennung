@@ -61,12 +61,38 @@ def volume_integral_invariant(img, radius, x, y):
 
 def vii_image(input_img, radius):
     empty = np.zeros((input_img.shape[0], input_img.shape[1]))
-    for y in tqdm(range(0, len(empty)-1)):
-        for x in range(0, len(empty[0])-1):
+    print("Calculating volume")
+    for y in tqdm(range(0, len(empty))):
+        for x in range(0, len(empty[0])):
             empty[y, x] = volume_integral_invariant(input_img, radius, x, y)
     return empty
 
 
-return_image = vii_image(image, r)
-plt.imshow(return_image)
+def is_zero_crossing(volume, x, y):
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if (volume.shape[0] > y + i >= 0 and
+                    0 <= x + j < volume.shape[1]):
+                if volume[y + i, x + j] * volume[y, x] < 0:
+                    return 1
+    return 0
+
+
+def zero_crossing(volume):
+    empty = np.zeros((volume.shape[0], volume.shape[1]))
+    print("Check for zero crossings")
+    for y in tqdm(range(0, len(empty))):
+        for x in range(0, len(empty[0])):
+            empty[y, x] = is_zero_crossing(volume, x, y)
+    return empty
+
+
+volume_image = vii_image(image, r)
+print(volume_image)
+plt.imshow(volume_image)
+plt.show()
+
+zero_crossings = zero_crossing(volume_image)
+print(zero_crossings)
+plt.imshow(zero_crossings)
 plt.show()
