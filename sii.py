@@ -9,7 +9,7 @@ image = skimage.io.imread(sys.argv[1], as_gray=True)
 volume_image = skimage.io.imread(sys.argv[2], as_gray=True)
 r = int(sys.argv[3])
 epsilon = 0.1  # TODO argv
-
+#kommentar
 
 def main():
     zero_crossings = zero_crossing(volume_image)
