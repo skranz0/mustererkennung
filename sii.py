@@ -15,7 +15,7 @@ def main():
     t = t_mask(image, r)
 
     edge_img = edge_image(zero_crossings, t)
-    skimage.io.imsave("dachfenster_edge_img.tiff", edge_img)
+    skimage.io.imsave("edge_img.tiff", edge_img)
     plt.imshow(volume_image)
     plt.show()
 
@@ -53,7 +53,7 @@ def patch(input_img, scharr_img, radius, x, y):
 def t_mask(input_image, radius):
     scharr_img = skimage.filters.scharr(input_image)
     empty = np.zeros((input_image.shape[0], input_image.shape[1]))
-    print(f"empty = {empty.shape}")
+    #print(f"empty = {empty.shape}")
     t = np.zeros(input_image.shape)
     print("Create patch")
     for y in tqdm(range(0, empty.shape[0])):
@@ -88,8 +88,8 @@ def min_patch(patch, radius, x, y):
     else:
         c = y - r
         d = y + r
-    print(f"x = {x}, y = {y}")
-    print(patch[c:d, a:b].shape)
+    #print(f"x = {x}, y = {y}")
+    #print(patch[c:d, a:b].shape)
     return min(map(min, patch[c:d+1, a:b+1]))
 
 
@@ -100,11 +100,11 @@ def is_edge(zero_crossings, t, x, y):
 def edge_image(zero_crossings, t):
     empty = np.zeros(zero_crossings.shape)
     print("Calculate edge image")
-    print(zero_crossings.shape)
-    print(t.shape)
+    #print(zero_crossings.shape)
+    #print(t.shape)
     for y in tqdm(range(0, zero_crossings.shape[0])):
         for x in range(0, zero_crossings.shape[1]):
-            print(f"x = {x}, y = {y}")
+            #print(f"x = {x}, y = {y}")
             empty[y, x] = is_edge(zero_crossings, t, x, y)
     return empty
 

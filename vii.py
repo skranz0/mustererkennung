@@ -15,7 +15,7 @@ def main():
     # image = checkerboard
 
     volume_image = vii_image(image, r)
-    skimage.io.imsave("dachfenster_volume.tiff", volume_image)
+    skimage.io.imsave("volume.tiff", volume_image)
     skimage.io.imshow(volume_image)
     #print(volume_image)
     plt.imshow(volume_image)
