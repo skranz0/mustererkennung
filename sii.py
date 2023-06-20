@@ -15,7 +15,7 @@ def main():
     t = t_mask(image, r)
 
     edge_img = edge_image(zero_crossings, t)
-    skimage.io.imsave("edge_img.tiff", edge_img)
+    skimage.io.imsave("dachfenster_edge_img.tiff", edge_img)
     plt.imshow(volume_image)
     plt.show()
 
