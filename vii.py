@@ -9,9 +9,17 @@ r = int(sys.argv[2])
 checkerboard = np.array([[i + j for j in range(5)] for i in range(5)]) % 2
 
 
-print(f"Reading file {imgpath}")
-image = skimage.io.imread(imgpath, as_gray=True)
-#image = checkerboard
+def main():
+    print(f"Reading file {imgpath}")
+    image = skimage.io.imread(imgpath, as_gray=True)
+    # image = checkerboard
+
+    volume_image = vii_image(image, r)
+    skimage.io.imsave("./out/test.tiff", volume_image)
+    skimage.io.imshow(volume_image)
+    #print(volume_image)
+    #plt.imshow(volume_image)
+    #plt.show()
 
 
 def volume_integral_invariant(img, radius, x, y):
@@ -60,7 +68,7 @@ def volume_integral_invariant(img, radius, x, y):
 
 
 def vii_image(input_img, radius):
-    empty = np.zeros((input_img.shape[0], input_img.shape[1]))
+    empty = np.ones((input_img.shape[0], input_img.shape[1]))
     print("Calculating volume")
     for y in tqdm(range(0, len(empty))):
         for x in range(0, len(empty[0])):
@@ -68,31 +76,5 @@ def vii_image(input_img, radius):
     return empty
 
 
-def is_zero_crossing(volume, x, y):
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if (volume.shape[0] > y + i >= 0 and
-                    0 <= x + j < volume.shape[1]):
-                if volume[y + i, x + j] * volume[y, x] < 0:
-                    return 1
-    return 0
-
-
-def zero_crossing(volume):
-    empty = np.zeros((volume.shape[0], volume.shape[1]))
-    print("Check for zero crossings")
-    for y in tqdm(range(0, len(empty))):
-        for x in range(0, len(empty[0])):
-            empty[y, x] = is_zero_crossing(volume, x, y)
-    return empty
-
-
-volume_image = vii_image(image, r)
-print(volume_image)
-plt.imshow(volume_image)
-plt.show()
-
-zero_crossings = zero_crossing(volume_image)
-print(zero_crossings)
-plt.imshow(zero_crossings)
-plt.show()
+if __name__ == "__main__":
+    main()
