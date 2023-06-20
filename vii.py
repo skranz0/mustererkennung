@@ -15,11 +15,11 @@ def main():
     # image = checkerboard
 
     volume_image = vii_image(image, r)
-    skimage.io.imsave("./out/test.tiff", volume_image)
+    skimage.io.imsave("dachfenster_volume.tiff", volume_image)
     skimage.io.imshow(volume_image)
     #print(volume_image)
-    #plt.imshow(volume_image)
-    #plt.show()
+    plt.imshow(volume_image)
+    plt.show()
 
 
 def volume_integral_invariant(img, radius, x, y):
@@ -70,8 +70,8 @@ def volume_integral_invariant(img, radius, x, y):
 def vii_image(input_img, radius):
     empty = np.ones((input_img.shape[0], input_img.shape[1]))
     print("Calculating volume")
-    for y in tqdm(range(0, len(empty))):
-        for x in range(0, len(empty[0])):
+    for y in tqdm(range(0, empty.shape[0])):
+        for x in range(0, empty.shape[1]):
             empty[y, x] = volume_integral_invariant(input_img, radius, x, y)
     return empty
 

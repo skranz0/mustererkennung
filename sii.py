@@ -1,5 +1,4 @@
 import sys
-
 import numpy as np
 import skimage
 from matplotlib import pyplot as plt
@@ -9,7 +8,6 @@ image = skimage.io.imread(sys.argv[1], as_gray=True)
 volume_image = skimage.io.imread(sys.argv[2], as_gray=True)
 r = int(sys.argv[3])
 epsilon = 0.1  # TODO argv
-#kommentar
 
 def main():
     zero_crossings = zero_crossing(volume_image)
@@ -17,7 +15,9 @@ def main():
     t = t_mask(image, r)
 
     edge_img = edge_image(zero_crossings, t)
-    skimage.io.imsave("out/edge_img.tiff", edge_img)
+    skimage.io.imsave("edge_img.tiff", edge_img)
+    plt.imshow(volume_image)
+    plt.show()
 
 
 def is_zero_crossing(volume, x, y):
@@ -52,7 +52,7 @@ def patch(input_img, scharr_img, radius, x, y):
 
 def t_mask(input_image, radius):
     scharr_img = skimage.filters.scharr(input_image)
-    empty = np.zeros(input_image.shape)
+    empty = np.zeros((input_image.shape[0], input_image.shape[1]))
     print(f"empty = {empty.shape}")
     t = np.zeros(input_image.shape)
     print("Create patch")
@@ -72,9 +72,9 @@ def min_patch(patch, radius, x, y):
     if x - r < 0:
         a = 0
         b = x + r
-    elif x + r >= len(patch):
+    elif x + r >= patch.shape[1]:
         a = x - r
-        b = len(patch)
+        b = patch.shape[1]
     else:
         a = x - r
         b = x + r
@@ -82,9 +82,9 @@ def min_patch(patch, radius, x, y):
     if y - r < 0:
         c = 0
         d = y + r
-    elif y + r >= len(patch):
+    elif y + r >= patch.shape[0]:
         c = y - r
-        d = len(patch)
+        d = patch.shape[0]
     else:
         c = y - r
         d = y + r
@@ -102,8 +102,8 @@ def edge_image(zero_crossings, t):
     print("Calculate edge image")
     print(zero_crossings.shape)
     print(t.shape)
-    for x in tqdm(range(0, zero_crossings.shape[1])):
-        for y in range(0, zero_crossings.shape[0]):
+    for y in tqdm(range(0, zero_crossings.shape[0])):
+        for x in range(0, zero_crossings.shape[1]):
             print(f"x = {x}, y = {y}")
             empty[y, x] = is_edge(zero_crossings, t, x, y)
     return empty
