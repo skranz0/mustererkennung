@@ -71,26 +71,25 @@ def t_mask(input_image, radius):
 def min_patch(patch, radius, x, y):
     if x - r < 0:
         a = 0
-        b = x + r
+        b = x + r + 1
     elif x + r >= patch.shape[1]:
         a = x - r
         b = patch.shape[1]
     else:
         a = x - r
-        b = x + r
-
+        b = x + r + 1
     if y - r < 0:
         c = 0
-        d = y + r
+        d = y + r + 1
     elif y + r >= patch.shape[0]:
         c = y - r
         d = patch.shape[0]
     else:
         c = y - r
-        d = y + r
+        d = y + r + 1
     #print(f"x = {x}, y = {y}")
     #print(patch[c:d, a:b].shape)
-    return min(map(min, patch[c:d+1, a:b+1]))
+    return min(map(min, patch[c:d, a:b]))
 
 
 def is_edge(zero_crossings, t, x, y):
