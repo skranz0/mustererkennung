@@ -6,8 +6,6 @@ from tqdm import tqdm
 
 imgpath = sys.argv[1]
 r = int(sys.argv[2])
-checkerboard = np.array([[i + j for j in range(5)] for i in range(5)]) % 2
-
 
 def main():
     print(f"Reading file {imgpath}")
