@@ -106,6 +106,11 @@ def visualize_pline():
 def main():
     plines = read_pline(sys.argv[1])
     radius = sys.argv[2]
+    """
+    TODO für alle Punkte q und alpha bestimmen
+    TODO q und alpha für alle Punkte visualisieren
+    TODO mby plines visualisieren
+    """
     
     
 
