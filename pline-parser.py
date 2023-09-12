@@ -1,5 +1,6 @@
 import sys
 import math
+import numpy as np
 
 
 class Vertex:
@@ -75,6 +76,14 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
             break
         last_vertex_index = next_vertex_index
     return last_vertex_index
+
+def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex):
+    center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
+    out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
+
+    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
+
+
         
 
 
