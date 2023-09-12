@@ -63,24 +63,17 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
     # TODO choose vertex by id instead of just position in array mby?
     last_vertex_index = [start_index]
     while True:
-        try:
-            if direction == "right":
-                next_vertex_index = last_vertex_index + 1
-            else:
-                next_vertex_index = last_vertex_index - 1
-        except IndexError:
-            if direction == "right":
-                print("End of list reached. Continue search at the beginnning...")
-                next_vertex_index = 0
-            else:
-                print("Start of list reached. Continue search at the end...")
-                next_vertex_index = len(pline.vertices) - 1
-        finally:
-            distance = math.dist(pline.vertices[start_index].coordinates,
-                                pline.vertices[next_vertex_index].coordinates)
-            if distance > radius:
-                break
-            last_vertex_index = next_vertex_index
+        if direction == "right":
+            next_vertex_index = (last_vertex_index + 1) % len(pline.vertices)
+            if next_vertex_index == start_index:
+                return None
+        else:
+            next_vertex_index = (last_vertex_index - 1) % len(pline.vertices)
+        distance = math.dist(pline.vertices[start_index].coordinates,
+                             pline.vertices[next_vertex_index].coordinates)
+        if distance > radius:
+            break
+        last_vertex_index = next_vertex_index
     return last_vertex_index
         
 
@@ -91,9 +84,8 @@ def visualize_pline():
 def main():
     plines = read_pline(sys.argv[1])
     radius = sys.argv[2]
-    print(plines[0].vertices[0])
-    print(plines[0].vertices[1])
-    print(math.dist(plines[0].vertices[0].coordinates, plines[0].vertices[1].coordinates))
+    
+    
 
 
 if __name__ == "__main__":
