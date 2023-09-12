@@ -77,14 +77,27 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
         last_vertex_index = next_vertex_index
     return last_vertex_index
 
-def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex):
+def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
     return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
 
 
-        
+def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
+    d = math.dist(c, i)
+    p = 2 * d * math.cos(beta)
+    q = d + 0.5 * (-p + sqrt(p ** 2 - 4 * (d ** 2 - r ** 2)))
+    return q
+
+
+def run_length(qp: float, qm: float, r: float) -> float:
+    q = 0.5 * (qp / r + qm /r)
+    return q
+
+
+def calc_alpha(q: float, beta: float, r: float) -> float: # bekommt das q von filter response, nicht run length
+    alpha = np.arccos(q * math.cos(beta) / r)
 
 
 def visualize_pline():
