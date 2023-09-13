@@ -21,6 +21,14 @@ class Pline:
 
 
 def read_pline(path: str) -> list[Pline]:
+    """Read a polyline from a `.pline` file.
+
+    Args:
+        path (str): Path to the file.
+
+    Returns:
+        list[Pline]: List of polylines in the file.
+    """
     print(f"Parsing file {path}")
     with open(path) as f:
         lines = f.readlines()
@@ -61,6 +69,17 @@ def read_pline(path: str) -> list[Pline]:
 
 
 def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "right") -> int:
+    """From a circle around a vertex of a polyline, find last following vertex that is still inside the circle.
+
+    Args:
+        pline (Pline): A polyline.
+        start_index (int): The index of the vertex in the center of the circle.
+        radius (int): The radius of the circle.
+        direction (str, optional): Choose if a vertex right or left from the original vertex is looked for. Defaults to "right".
+
+    Returns:
+        int: The index of the last vertex following the original vertex that is still inside the circle.
+    """
     # TODO choose vertex by id instead of just position in array mby?
     last_vertex_index = [start_index]
     while True:
@@ -78,6 +97,16 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
     return last_vertex_index
 
 def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
+    """Calculate the angle beta
+
+    Args:
+        center (Vertex): Middle point of the circle.
+        last_in (Vertex): Last vertex still inside the circle.
+        first_out (Vertex): First vertex outside of the circle.
+
+    Returns:
+        float: beta in DEG.
+    """
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
@@ -101,6 +130,7 @@ def calc_alpha(q: float, beta: float, r: float) -> float: # bekommt das q von fi
 
 
 def visualize_pline():
+    # TODO let that do something
     pass
 
 def main():
