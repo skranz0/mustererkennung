@@ -1,6 +1,7 @@
 import sys
 import math
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 class Vertex:
@@ -110,7 +111,7 @@ def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
-    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector))) # FIXME invalid value encountered in scalar divide
+    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
 
 
 def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
@@ -130,13 +131,30 @@ def calc_alpha(q: float, beta: float, r: float) -> float: # bekommt das q von fi
     return alpha
 
 
-def visualize_pline():
-    # TODO let that do something
-    pass
+def visualize_pline(pline: Pline):
 
+
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    ax.scatter()
+
+
+def plot_pline(pline: Pline, alphas: list[list[float]], qs: list[list[float]]) -> None:
+    distances = [0]
+    for i in range(len(pline.vertices) - 1):
+        distance = math.dist(pline.vertices[i].coordinates, pline.vertices[i+1].coordinates)
+        if i == 0:
+            distances.append(distance)
+        else:
+            distances.append(distance + distances[i-1])
+    
+    fig, ax = plt.subplots()
+    ax.scatter(distances, qs)
+    plt.show()
+
+    
 def main():
     plines = read_pline(sys.argv[1])
-    radius = float(sys.argv[2]) # FIXME darf nicht kleiner sein als geringster Abstand zwischen zwei Punkten
+    radius = float(sys.argv[2])
     """
     TODO q und alpha für alle Punkte visualisieren
     TODO mby plines visualisieren
@@ -173,6 +191,9 @@ def main():
     
     print(sharp_corners_qs)
     print(sharp_corners_alphas)
+
+    for pline in plines:
+        plot_pline(pline, sharp_corners_alphas[0], sharp_corners_qs[0])
 
 
 
