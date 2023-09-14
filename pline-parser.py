@@ -111,7 +111,7 @@ def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
-    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
+    return np.radians(180) - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
 
 
 def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
@@ -138,17 +138,24 @@ def visualize_pline(pline: Pline):
     ax.scatter()
 
 
-def plot_pline(pline: Pline, alphas: list[list[float]], qs: list[list[float]]) -> None:
-    distances = [0]
-    for i in range(len(pline.vertices) - 1):
-        distance = math.dist(pline.vertices[i].coordinates, pline.vertices[i+1].coordinates)
-        if i == 0:
-            distances.append(distance)
-        else:
-            distances.append(distance + distances[i-1])
+def plot_pline(pline: Pline, alphas: list[list[float]], qs: list[list[float]], radius: float) -> None:
+    distances = [0.0]
+    d = 0
+    for i in range(len(pline.vertices)-1):
+        d += math.dist(pline.vertices[i].coordinates, pline.vertices[i+1].coordinates)
+        distances.append(d)
+        #print(pline.vertices[i].coordinates)    
+    #print(distances)
+    fig, ax = plt.subplots(1,2)
+    ax[0].plot(distances, qs)
+    ax[0].set_title(f"Runlength integral invariant")
+    ax[0].set(xlabel="Lauflänge in [mm]", ylabel=r"Runlength Integral Invariant $\hat{Q}$")
+    ax[1].plot(distances, alphas)
+    ax[1].set_title(f"Angle integral invariant")
+    ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
+    fig.suptitle(f"Polyline {pline.label}, $r=${radius}")
     
-    fig, ax = plt.subplots()
-    ax.scatter(distances, qs)
+
     plt.show()
 
     
@@ -180,6 +187,16 @@ def main():
                 qs.append(None)
                 alphas.append(None)
                 continue
+            except IndexError:
+                beta_right = calc_beta(vertex, pline.vertices[last_right], pline.vertices[0])
+                response_right = filter_response(vertex, pline.vertices[last_right], beta_right, radius)
+
+                q = run_length(response_right, response_left, radius)
+                alpha = calc_alpha(response_right, beta_right, radius)
+
+                qs.append(q)
+                alphas.append(alpha)
+                continue
 
             q = run_length(response_right, response_left, radius)
             alpha = calc_alpha(response_right, beta_right, radius)
@@ -189,11 +206,11 @@ def main():
         sharp_corners_qs.append(qs)
         sharp_corners_alphas.append(alphas)
     
-    print(sharp_corners_qs)
-    print(sharp_corners_alphas)
+    #print(sharp_corners_qs)
+    #print(sharp_corners_alphas)
 
     for pline in plines:
-        plot_pline(pline, sharp_corners_alphas[0], sharp_corners_qs[0])
+        plot_pline(pline, sharp_corners_alphas[0], sharp_corners_qs[0], radius) # FIXME work for multiple plines
 
 
 
