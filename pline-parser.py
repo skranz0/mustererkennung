@@ -81,7 +81,7 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
         int: The index of the last vertex following the original vertex that is still inside the circle.
     """
     # TODO choose vertex by id instead of just position in array mby?
-    last_vertex_index = [start_index]
+    last_vertex_index = start_index
     while True:
         if direction == "right":
             next_vertex_index = (last_vertex_index + 1) % len(pline.vertices)
@@ -110,11 +110,11 @@ def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
-    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
+    return 180 - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector))) # FIXME invalid value encountered in scalar divide
 
 
 def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
-    d = math.dist(c, i)
+    d = math.dist(c.coordinates, i.coordinates)
     p = 2 * d * math.cos(beta)
     q = d + 0.5 * (-p + math.sqrt(p ** 2 - 4 * (d ** 2 - r ** 2)))
     return q
@@ -127,6 +127,7 @@ def run_length(qp: float, qm: float, r: float) -> float:
 
 def calc_alpha(q: float, beta: float, r: float) -> float: # bekommt das q von filter response, nicht run length
     alpha = np.arccos(q * math.cos(beta) / r)
+    return alpha
 
 
 def visualize_pline():
@@ -135,9 +136,8 @@ def visualize_pline():
 
 def main():
     plines = read_pline(sys.argv[1])
-    radius = sys.argv[2]
+    radius = float(sys.argv[2]) # FIXME darf nicht kleiner sein als geringster Abstand zwischen zwei Punkten
     """
-    TODO für alle Punkte q und alpha bestimmen
     TODO q und alpha für alle Punkte visualisieren
     TODO mby plines visualisieren
     """
@@ -145,25 +145,34 @@ def main():
     sharp_corners_qs = []
     sharp_corners_alphas = []
     for pline in plines:
+        print(f"Iterating pline {pline.label}")
         qs = []
         alphas = []
         for vertex in pline.vertices:
-            last_right = last_in_circle(pline, pline.index(vertex), radius)
-            beta_right = calc_beta(vertex, pline.vertices[last_right], pline.vertices[last_right+1])
-            response_right = filter_response(vertex, pline.vertices[last_right], beta_right, radius)
+            try:
+                last_right = last_in_circle(pline, pline.vertices.index(vertex), radius)
+                beta_right = calc_beta(vertex, pline.vertices[last_right], pline.vertices[last_right+1])
+                response_right = filter_response(vertex, pline.vertices[last_right], beta_right, radius)
 
-            last_left = last_in_circle(pline, pline.index(vertex), radius, direction="left")
-            beta_left = calc_beta(vertex, pline.vertices[last_left], pline.vertices[last_left-1])
-            response_left = filter_response(vertex, pline.vertices[last_left], beta_left, radius)
+                last_left = last_in_circle(pline, pline.vertices.index(vertex), radius, direction="left")
+                beta_left = calc_beta(vertex, pline.vertices[last_left], pline.vertices[last_left-1])
+                response_left = filter_response(vertex, pline.vertices[last_left], beta_left, radius)
+            except TypeError:
+                print(f"{TypeError} in vertex {vertex.id}")
+                qs.append(None)
+                alphas.append(None)
+                continue
 
             q = run_length(response_right, response_left, radius)
-
             alpha = calc_alpha(response_right, beta_right, radius)
 
             qs.append(q)
             alphas.append(alpha)
         sharp_corners_qs.append(qs)
         sharp_corners_alphas.append(alphas)
+    
+    print(sharp_corners_qs)
+    print(sharp_corners_alphas)
 
 
 
