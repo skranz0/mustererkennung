@@ -141,8 +141,30 @@ def main():
     TODO q und alpha für alle Punkte visualisieren
     TODO mby plines visualisieren
     """
-    
-    
+
+    sharp_corners_qs = []
+    sharp_corners_alphas = []
+    for pline in plines:
+        qs = []
+        alphas = []
+        for vertex in pline.vertices:
+            last_right = last_in_circle(pline, pline.index(vertex), radius)
+            beta_right = calc_beta(vertex, pline.vertices[last_right], pline.vertices[last_right+1])
+            response_right = filter_response(vertex, pline.vertices[last_right], beta_right, radius)
+
+            last_left = last_in_circle(pline, pline.index(vertex), radius, direction="left")
+            beta_left = calc_beta(vertex, pline.vertices[last_left], pline.vertices[last_left-1])
+            response_left = filter_response(vertex, pline.vertices[last_left], beta_left, radius)
+
+            q = run_length(response_right, response_left, radius)
+
+            alpha = calc_alpha(response_right, beta_right, radius)
+
+            qs.append(q)
+            alphas.append(alpha)
+        sharp_corners_qs.append(qs)
+        sharp_corners_alphas.append(alphas)
+
 
 
 if __name__ == "__main__":
