@@ -137,27 +137,6 @@ def visualize_pline(pline: Pline):
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     ax.scatter()
 
-
-def plot_pline(pline: Pline, alphas: list[list[float]], qs: list[list[float]], radius: float) -> None:
-    distances = [0.0]
-    d = 0
-    for i in range(len(pline.vertices)-1):
-        d += math.dist(pline.vertices[i].coordinates, pline.vertices[i+1].coordinates)
-        distances.append(d)
-        #print(pline.vertices[i].coordinates)    
-    #print(distances)
-    fig, ax = plt.subplots(1,2)
-    ax[0].plot(distances, qs)
-    ax[0].set_title(f"Runlength integral invariant")
-    ax[0].set(xlabel="Lauflänge in [mm]", ylabel=r"Runlength Integral Invariant $\hat{Q}$")
-    ax[1].plot(distances, alphas)
-    ax[1].set_title(f"Angle integral invariant")
-    ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
-    fig.suptitle(f"Polyline {pline.label}, $r=${radius}")
-    
-
-    plt.show()
-
     
 def main():
     plines = read_pline(sys.argv[1])
@@ -203,14 +182,32 @@ def main():
 
             qs.append(q)
             alphas.append(alpha)
+
         sharp_corners_qs.append(qs)
         sharp_corners_alphas.append(alphas)
     
     #print(sharp_corners_qs)
     #print(sharp_corners_alphas)
 
-    for pline in plines:
-        plot_pline(pline, sharp_corners_alphas[0], sharp_corners_qs[0], radius) # FIXME work for multiple plines
+    for i in range(len(plines)):
+        distances = [0.0]
+        d = 0
+        for j in range(len(plines[i].vertices)-1):
+            d += math.dist(plines[i].vertices[j].coordinates, plines[i].vertices[j+1].coordinates)
+            distances.append(d)
+   
+        fig, ax = plt.subplots(2,1, constrained_layout=True)
+        #fig.tight_layout(pad=3.0)
+        ax[0].plot(distances, sharp_corners_qs[i])
+        ax[0].set_title(f"Runlength integral invariant")
+        ax[0].set(xlabel="Lauflänge in [mm]", ylabel=r"Runlength Integral Invariant $\hat{Q}$")
+        ax[1].plot(distances, sharp_corners_alphas[i])
+        ax[1].set_title(f"Angle integral invariant")
+        ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
+        fig.suptitle(f"Polyline {pline.label}, $r=${radius}")
+
+        plt.savefig(f"Ergebnisse/plines/plotr{radius}-pline{i}.png")
+        #plt.show()
 
 
 
