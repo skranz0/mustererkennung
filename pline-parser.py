@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 class Vertex:
     def __init__(self, id: int, coordinates: list[float], orientation: list[float]) -> None:
-        self.id = id # TODO make this a dictionary
+        self.id = id
         self.coordinates = coordinates
         self.orientation = orientation
     def __str__(self) -> str:
@@ -82,7 +82,6 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
     Returns:
         int: The index of the last vertex following the original vertex that is still inside the circle.
     """
-    # TODO choose vertex by id instead of just position in array mby?
     last_vertex_index = start_index
     while True:
         if direction == "right":
