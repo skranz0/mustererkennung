@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-class Vertex:  # TODO add documentation
+class Vertex:
     def __init__(self, identifier: int, coordinates: list[float], orientation: list[float]) -> None:
         self.id = identifier
         self.coordinates = coordinates
@@ -15,7 +15,7 @@ class Vertex:  # TODO add documentation
         return f"ID: {self.id}\nCoord: {self.coordinates}\nOrient: {self.orientation}"
 
 
-class Pline:  # TODO add documentation
+class Pline:
     def __init__(self, label: int, vertex_count: int, vertices: list[Vertex]) -> None:
         self.label = label
         self.vertex_count = vertex_count
@@ -135,15 +135,9 @@ def calc_alpha(q: float, beta: float, r: float) -> float:  # bekommt das q von f
     alpha = np.arccos(q * math.cos(beta) / r)
     return alpha
 
-
-def visualize_pline(pline: Pline):
-    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    ax.scatter()
-
     
 def main():
     plines = read_pline(sys.argv[1])
-    # radius = float(sys.argv[2])
     """
     TODO mby plines visualisieren
     """
@@ -199,7 +193,7 @@ def main():
         sharp_corners_qs.append(qs)
         sharp_corners_alphas.append(alphas)
 
-    os.mkdir(f"Ergebnisse/plines/r{int(radius)}/")
+    #os.mkdir(f"Ergebnisse/plines/r{int(radius)}/")
     for i in range(len(plines)):
         distances = [0.0]
         d = 0
@@ -227,7 +221,7 @@ def main():
         ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
         fig.suptitle(f"Polyline {pline.label}, $r=${radiuses[i]}")
 
-        plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
+        #plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
         # plt.show()
 
 
