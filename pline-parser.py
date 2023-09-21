@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-class Vertex:
+class Vertex: # TODO add documentation
     def __init__(self, id: int, coordinates: list[float], orientation: list[float]) -> None:
         self.id = id
         self.coordinates = coordinates
@@ -13,7 +13,7 @@ class Vertex:
     def __str__(self) -> str:
         return f"ID: {self.id}\nCoord: {self.coordinates}\nOrient: {self.orientation}"
 
-class Pline:
+class Pline: # TODO add documentation
     def __init__(self, label: int, vertex_count: int, vertices: list[Vertex]) -> None:
         self.label = label
         self.vertex_count = vertex_count
