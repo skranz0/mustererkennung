@@ -148,6 +148,7 @@ def main():
     TODO mby plines visualisieren
     """
 
+    radiuses = []
     sharp_corners_qs = []
     sharp_corners_alphas = []
     for pline in plines:
@@ -158,7 +159,8 @@ def main():
             distances.append(d)
         max_dist = max(distances)
 
-        radius = max_dist  # TODO an Achsenbeschriftung weitergeben
+        radius = max_dist
+        radiuses.append(radius)
 
         print(f"Iterating pline {pline.label}")
         qs = []
@@ -223,7 +225,7 @@ def main():
                    markeredgecolor="#eda55c")
         ax[1].set_title(f"Angle integral invariant")
         ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
-        fig.suptitle(f"Polyline {pline.label}, $r=${radius}")
+        fig.suptitle(f"Polyline {pline.label}, $r=${radiuses[i]}")
 
         plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
         # plt.show()
