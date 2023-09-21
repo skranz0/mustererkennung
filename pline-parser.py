@@ -5,19 +5,22 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-class Vertex: # TODO add documentation
-    def __init__(self, id: int, coordinates: list[float], orientation: list[float]) -> None:
-        self.id = id
+class Vertex:  # TODO add documentation
+    def __init__(self, identifier: int, coordinates: list[float], orientation: list[float]) -> None:
+        self.id = identifier
         self.coordinates = coordinates
         self.orientation = orientation
+
     def __str__(self) -> str:
         return f"ID: {self.id}\nCoord: {self.coordinates}\nOrient: {self.orientation}"
 
-class Pline: # TODO add documentation
+
+class Pline:  # TODO add documentation
     def __init__(self, label: int, vertex_count: int, vertices: list[Vertex]) -> None:
         self.label = label
         self.vertex_count = vertex_count
         self.vertices = vertices
+
     def __str__(self) -> str:
         return f"Polyline {self.label} with {self.vertex_count} vertices"
 
@@ -61,8 +64,6 @@ def read_pline(path: str) -> list[Pline]:
             
             new_vertex = Vertex(new_id, new_coord, new_orient)
             pline_verts.append(new_vertex)
-        #else:
-        #    print(f"Liste hat Länge {len(pline_string)}")
         
         new_pline = Pline(pline_label, pline_nvert, pline_verts)
         plines.append(new_pline)
@@ -70,14 +71,15 @@ def read_pline(path: str) -> list[Pline]:
     return plines
 
 
-def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "right") -> int:
+def last_in_circle(pline: Pline, start_index: int, radius: int, direction="right") -> int:
     """From a circle around a vertex of a polyline, find last following vertex that is still inside the circle.
 
     Args:
         pline (Pline): A polyline.
         start_index (int): The index of the vertex in the center of the circle.
         radius (int): The radius of the circle.
-        direction (str, optional): Choose if a vertex right or left from the original vertex is looked for. Defaults to "right".
+        direction (str, optional): Choose if a vertex right or left from the original vertex is looked for.
+            Defaults to "right".
 
     Returns:
         int: The index of the last vertex following the original vertex that is still inside the circle.
@@ -87,7 +89,7 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
         if direction == "right":
             next_vertex_index = (last_vertex_index + 1) % len(pline.vertices)
             if next_vertex_index == start_index:
-                return None
+                return
         else:
             next_vertex_index = (last_vertex_index - 1) % len(pline.vertices)
         distance = math.dist(pline.vertices[start_index].coordinates,
@@ -96,6 +98,7 @@ def last_in_circle(pline: Pline, start_index: int, radius: int, direction = "rig
             break
         last_vertex_index = next_vertex_index
     return last_vertex_index
+
 
 def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     """Calculate the angle beta
@@ -111,10 +114,12 @@ def calc_beta(center: Vertex, last_in: Vertex, first_out: Vertex) -> float:
     center_vector = list(map(lambda a, b: a - b, center.coordinates, last_in.coordinates))
     out_vector = list(map(lambda a, b: a - b, first_out.coordinates, last_in.coordinates))
 
-    return np.radians(180) - np.arccos(np.dot(center_vector, out_vector) / (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
+    beta = np.radians(180) - np.arccos(np.dot(center_vector, out_vector) /
+                                       (np.linalg.norm(center_vector) * np.linalg.norm(out_vector)))
+    return beta
 
 
-def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
+def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> float:
     d = math.dist(c.coordinates, i.coordinates)
     p = 2 * d * math.cos(beta)
     q = d + 0.5 * (-p + math.sqrt(p ** 2 - 4 * (d ** 2 - r ** 2)))
@@ -122,25 +127,23 @@ def filter_response(i: Vertex, c: Vertex, beta: float, r: float) -> list[float]:
 
 
 def run_length(qp: float, qm: float, r: float) -> float:
-    q = 0.5 * (qp / r + qm /r)
+    q = 0.5 * (qp / r + qm / r)
     return q
 
 
-def calc_alpha(q: float, beta: float, r: float) -> float: # bekommt das q von filter response, nicht run length
+def calc_alpha(q: float, beta: float, r: float) -> float:  # bekommt das q von filter response, nicht run length
     alpha = np.arccos(q * math.cos(beta) / r)
     return alpha
 
 
 def visualize_pline(pline: Pline):
-
-
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
     ax.scatter()
 
     
 def main():
     plines = read_pline(sys.argv[1])
-    #radius = float(sys.argv[2])
+    # radius = float(sys.argv[2])
     """
     TODO mby plines visualisieren
     """
@@ -155,7 +158,7 @@ def main():
             distances.append(d)
         max_dist = max(distances)
 
-        radius = max_dist # TODO an Achsenbeschriftung weitergeben
+        radius = max_dist  # TODO an Achsenbeschriftung weitergeben
 
         print(f"Iterating pline {pline.label}")
         qs = []
@@ -193,9 +196,6 @@ def main():
 
         sharp_corners_qs.append(qs)
         sharp_corners_alphas.append(alphas)
-    
-    #print(sharp_corners_qs)
-    #print(sharp_corners_alphas)
 
     os.mkdir(f"Ergebnisse/plines/r{int(radius)}/")
     for i in range(len(plines)):
@@ -205,27 +205,28 @@ def main():
             d += math.dist(plines[i].vertices[j].coordinates, plines[i].vertices[j+1].coordinates)
             distances.append(d)
    
-        fig, ax = plt.subplots(2,1, constrained_layout=True)
-        #fig.tight_layout(pad=3.0)
+        fig, ax = plt.subplots(2, 1, constrained_layout=True)
+        # fig.tight_layout(pad=3.0)
         ax[0].plot(distances, sharp_corners_qs[i],
-                   linestyle = "solid",
-                   color = "#1c6294",
-                   marker = ".",
-                   markerfacecolor = '#eda55c', markeredgecolor = "#eda55c")
+                   linestyle="solid",
+                   color="#1c6294",
+                   marker=".",
+                   markerfacecolor='#eda55c',
+                   markeredgecolor="#eda55c")
         ax[0].set_title(f"Runlength integral invariant")
         ax[0].set(xlabel="Lauflänge in [mm]", ylabel=r"Runlength Integral Invariant $\hat{Q}$")
         ax[1].plot(distances, sharp_corners_alphas[i],
-                   linestyle = "solid",
-                   color = "#1c6294",
-                   marker = ".",
-                   markerfacecolor = '#eda55c', markeredgecolor = "#eda55c")
+                   linestyle="solid",
+                   color="#1c6294",
+                   marker=".",
+                   markerfacecolor='#eda55c',
+                   markeredgecolor="#eda55c")
         ax[1].set_title(f"Angle integral invariant")
         ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
         fig.suptitle(f"Polyline {pline.label}, $r=${radius}")
 
         plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
-        #plt.show()
-
+        # plt.show()
 
 
 if __name__ == "__main__":
