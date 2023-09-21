@@ -245,7 +245,7 @@ def main():
         ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
         fig.suptitle(f"Polyline {pline.label}, $r=${radiuses[i]}")
 
-        visualize_pline(plines[i], sharp_corners_qs[i])
+        visualize_pline(plines[i], sharp_corners_alphas[i])
 
         #plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
         plt.show()
