@@ -135,6 +135,30 @@ def calc_alpha(q: float, beta: float, r: float) -> float:  # bekommt das q von f
     alpha = np.arccos(q * math.cos(beta) / r)
     return alpha
 
+
+def transform_pline(pline: Pline):
+    xs = []
+    ys = []
+    zs = []
+    for vertex in pline.vertices:
+        xs.append(vertex.coordinates[0])
+        ys.append(vertex.coordinates[1])
+        zs.append(vertex.coordinates[2])
+    coordinates = [xs, ys, zs]
+    return coordinates
+
+    
+
+def visualize_pline(pline: Pline, filter_responses: list[float]=None):
+    points = transform_pline(pline)
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    sc = ax.scatter(points[0], points[1], points[2], c=filter_responses)
+
+    cbar = fig.colorbar(sc)
+    cbar.set_label(r"$\alpha$")
+    
+    #plt.show()
+
     
 def main():
     plines = read_pline(sys.argv[1])
@@ -221,8 +245,10 @@ def main():
         ax[1].set(xlabel="Lauflänge in [mm]", ylabel=r"Angle Integral Invariant $\alpha_K$")
         fig.suptitle(f"Polyline {pline.label}, $r=${radiuses[i]}")
 
+        visualize_pline(plines[i], sharp_corners_qs[i])
+
         #plt.savefig(f"Ergebnisse/plines/r{int(radius)}/pline{i}.png")
-        # plt.show()
+        plt.show()
 
 
 if __name__ == "__main__":
