@@ -23,3 +23,7 @@ python3 scd.py <file>.pline
 ```
 
 ausgeführt werden.
+
+## Ergebnisse
+
+Ergebnisbilder, sowie der Seminarbericht sind [hier](https://cloud.informatik.uni-halle.de/s/tGemtieiKrdSGCp) abgelegt.
